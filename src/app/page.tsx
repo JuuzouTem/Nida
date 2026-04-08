@@ -4,20 +4,25 @@ import AudioPlayer from "../components/AudioPlayer";
 import DragDropBoard from "../components/DragDropBoard";
 import StoryTransition from "../components/StoryTransition";
 import RomanticMiniGame from "../components/RomanticMiniGame";
+import HeianEraScene from "../components/HeianEraScene";
 import FinaleScreen from "../components/FinaleScreen";
 import DNAHelixAnimation from "../components/DNAHelixAnimation";
 import { useGameLogic } from "../hooks/useGameLogic";
 
 export default function Home() {
-  // Bütün logic'i (mantığı) hook'tan çekiyoruz. Sayfa tertemiz kalıyor.
   const { phase, isAudioPlaying, startExperiment, advancePhase } = useGameLogic();
 
+  // Arka plan rengini faza göre dinamik olarak belirliyoruz
+  const getBackgroundClass = () => {
+    if (phase === "HEIAN_SCENE") return "bg-transparent"; // HeianEraScene kendi arkaplanına sahip
+    if (phase === "FINALE") return "bg-[#0B090A]"; // Bilet için daha koyu/sıcak bir siyah
+    return "bg-lab-dark"; // Laboratuvar fazları
+  };
+
   return (
-    <main className={`min-h-screen flex flex-col items-center justify-center p-4 overflow-hidden relative transition-colors duration-1000 ${
-      phase === "FINALE" ? "bg-black" : "bg-lab-dark"
-    }`}>
+    <main className={`min-h-screen flex flex-col items-center justify-center p-4 overflow-hidden relative transition-colors duration-1000 ${getBackgroundClass()}`}>
       
-      {/* Background DNA Animation (Sadece laboratuvar fazlarında görünür) */}
+      {/* Background DNA Animation */}
       {(phase === "START" || phase === "TUTORIAL") && <DNAHelixAnimation />}
 
       {/* START SCREEN */}
@@ -52,11 +57,19 @@ export default function Home() {
       {/* MINI GAME PHASE */}
       {phase === "MINI_GAME" && (
         <div className="w-full h-full flex flex-col items-center justify-center animate-fade-in z-10">
-          <RomanticMiniGame onComplete={() => advancePhase("FINALE")} />
+          {/* Oyun bittiğinde artık Finale değil, Heian sahnesine geçiyoruz */}
+          <RomanticMiniGame onComplete={() => advancePhase("HEIAN_SCENE")} />
         </div>
       )}
 
-      {/* FINALE PHASE */}
+      {/* HEIAN ERA SCENE PHASE */}
+      {phase === "HEIAN_SCENE" && (
+        <div className="w-full h-screen absolute inset-0 z-10">
+          <HeianEraScene onComplete={() => advancePhase("FINALE")} />
+        </div>
+      )}
+
+      {/* FINALE PHASE (Uçak Bileti burada eklenecek - Bir sonraki adım) */}
       {phase === "FINALE" && (
         <div className="w-full h-screen absolute inset-0 z-10">
           <FinaleScreen />
@@ -66,8 +79,8 @@ export default function Home() {
       {/* Background Audio Player */}
       <AudioPlayer isPlaying={isAudioPlaying} />
 
-      {/* Background Grid */}
-      {phase !== "FINALE" && (
+      {/* Background Grid - Laboratuvar fazlarında görünür */}
+      {(phase !== "FINALE" && phase !== "HEIAN_SCENE") && (
         <div 
           className={`absolute inset-0 pointer-events-none transition-opacity duration-1000 ${
             phase === "MINI_GAME" 

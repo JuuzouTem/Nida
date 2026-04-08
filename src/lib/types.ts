@@ -1,8 +1,8 @@
-export type GamePhase = 'START' | 'TUTORIAL' | 'TRANSITION' | 'MINI_GAME' | 'FINALE';
+export type GamePhase = 'START' | 'TUTORIAL' | 'TRANSITION' | 'MINI_GAME' | 'HEIAN_SCENE' | 'FINALE';
 
 export type StandardBase = 'A' | 'T' | 'G' | 'C';
 export type MutatedBase = 'N' | 'İ' | 'D' | 'B';
-export type DNABaseType = StandardBase | MutatedBase;
+export type DNABaseType = StandardBase | MutatedBase | string;
 
 export interface DraggableItem {
   id: string;
