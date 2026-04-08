@@ -37,7 +37,7 @@ export default function AudioPlayer({ isPlaying }: AudioPlayerProps) {
     <div className="fixed bottom-4 right-4 z-50">
       <audio
         ref={audioRef}
-        src="/assets/music/dangerously-yours.mp3"
+        src="/assets/music/wicked-game.mp3"
         loop
       />
       {isPlaying && (
